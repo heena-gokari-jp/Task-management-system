@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">Welcome to Task Management System</h2>
+                </div>
+                <div class="card-body">
+                    <p class="lead">Organize your tasks efficiently and boost your productivity.</p>
+                    
+                    {% if user.is_authenticated %}
+                        <p>Welcome back, {{ user.username }}!</p>
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'tasks:task_list' %}" class="btn btn-primary btn-lg">Go to Dashboard</a>
+                        </div>
+                    {% else %}
+                        <p>Please sign in to manage your tasks or create a new account.</p>
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                            <a href="{% url 'account_login' %}" class="btn btn-primary me-md-2">Sign In</a>
+                            <a href="{% url 'account_signup' %}" class="btn btn-outline-primary">Sign Up</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="card shadow mt-4">
+                <div class="card-header bg-light">
+                    <h3 class="mb-0">Features</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                <h4><i class="bi bi-list-check"></i> Task Management</h4>
+                                <p>Create, update, and organize your tasks with ease.</p>
+                            </div>
+                            <div class="mb-4">
+                                <h4><i class="bi bi-tags"></i> Categories</h4>
+                                <p>Group related tasks together for better organization.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                <h4><i class="bi bi-filter-square"></i> Filtering & Sorting</h4>
+                                <p>Find tasks quickly with powerful filtering options.</p>
+                            </div>
+                            <div class="mb-4">
+                                <h4><i class="bi bi-calendar-check"></i> Due Dates</h4>
+                                <p>Never miss a deadline with task due date tracking.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
