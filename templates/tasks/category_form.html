@@ -1,35 +1,3 @@
-    <!-- Template: new_category.html
-    Description:
-        This template renders the form for creating a new category in the 
-        Task Management System. It uses a Bootstrap 5 styled card layout and
-        a custom form template tag to enhance field appearance.
-    
-        Key Features:
-        - Extends 'base.html' to maintain consistent layout across the site.
-        - Loads custom template tag 'form_tags' to use 'add_class' filter for styling.
-        - Iterates over the form fields dynamically, displaying labels, validation errors,
-          input fields with Bootstrap styling, and optional help text.
-        - Includes a CSRF token for security.
-        - Provides:
-            - A 'Cancel' button that redirects to the category list page.
-            - A 'Save' button to submit the form via POST.
-    
-    Context Variables:
-        - form: A Django `CategoryForm` instance, passed from the view to render the input fields.
-    
-    Dependencies:
-        - Bootstrap 5 for layout and form control styling.
-        - Bootstrap Icons (if used elsewhere in base.html).
-        - Custom template tag `add_class` from 'form_tags' to apply "form-control" to fields.
-        - Django CSRF middleware.
-        - URL name 'tasks:category_list' for cancel redirect.
-    
-    Usage:
-        Rendered when a user accesses the "Create Category" page.
-        Displays and processes a form for adding a new task category. -->
-    
-    
-
 {% extends 'base.html' %}
 {% load form_tags %}
 {% block content %}

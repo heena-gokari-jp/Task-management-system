@@ -1,32 +1,3 @@
-    <!-- Template: delete_category.html
-    Description:
-        This template renders a confirmation page for deleting a task category
-        in the Task Management System. It extends the base layout and includes
-        a Bootstrap-styled card to ask the user to confirm deletion of a category.
-    
-        Key Features:
-        - Inherits from 'base.html' to maintain consistent site layout.
-        - Displays the name of the category to be deleted.
-        - Warns the user that deleting the category will disassociate it from all tasks.
-        - Provides a CSRF-protected form with:
-            - A 'Cancel' button that redirects to the category list.
-            - A 'Delete' button that submits the deletion request via POST.
-        - Uses Bootstrap 5 and Bootstrap Icons for styling and icons.
-    
-    Context Variables:
-        - category: The Category instance to be deleted (should contain at least `name`).
-    
-    Dependencies:
-        - Bootstrap 5 (CSS classes like `btn`, `card`, `alert`, etc.)
-        - Bootstrap Icons (`bi bi-exclamation-triangle`)
-        - Django CSRF middleware (for `{% csrf_token %}`)
-        - URL name 'tasks:category_list' for cancel redirect
-    
-    Usage:
-        Rendered when the user chooses to delete a category from the category list
-        or category detail view. Handles user confirmation before category deletion. -->
-
-
 {% extends 'base.html' %}
 
 {% block content %}
