@@ -144,7 +144,7 @@ ACCOUNT_UNIQUE_EMAIL = True
 
 # Login/Logout URLs
 # LOGIN_REDIRECT_URL = 'dashboard'
-#LOGIN_REDIRECT_URL = 'tasks:task_list'
+LOGIN_REDIRECT_URL = 'tasks:task_list'
 LOGOUT_REDIRECT_URL = 'home'
 LOGIN_URL = 'account_login'
 
