@@ -1,4 +1,5 @@
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, status
+from rest_framework.response import Response
 from .models import Task, Category
 from .serializers import TaskSerializer, CategorySerializer
 
@@ -10,11 +11,23 @@ class TaskViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         """Return only tasks owned by the current user."""
-        return Task.objects.filter(user=self.request.user)
+        try:
+            return Task.objects.filter(user=self.request.user)
+        except Exception as e:
+            return Response(
+                {"error": f"Error retrieving tasks: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
     
     def perform_create(self, serializer):
         """Set the user when creating a task."""
-        serializer.save(user=self.request.user)
+        try:
+            serializer.save(user=self.request.user)
+        except Exception as e:
+            return Response(
+                {"error": f"Error creating task: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 class CategoryViewSet(viewsets.ModelViewSet):
     """API endpoint for categories."""
@@ -23,8 +36,20 @@ class CategoryViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         """Return only categories owned by the current user."""
-        return Category.objects.filter(user=self.request.user)
+        try:
+            return Category.objects.filter(user=self.request.user)
+        except Exception as e:
+            return Response(
+                {"error": f"Error retrieving categories: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
     
     def perform_create(self, serializer):
         """Set the user when creating a category."""
-        serializer.save(user=self.request.user)
+        try:
+            serializer.save(user=self.request.user)
+        except Exception as e:
+            return Response(
+                {"error": f"Error creating category: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
