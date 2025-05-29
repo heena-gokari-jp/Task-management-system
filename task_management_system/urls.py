@@ -20,22 +20,21 @@ from django.views.generic import TemplateView
 from rest_framework import routers
 from tasks.api import TaskViewSet, CategoryViewSet
 
-# API router setup
+# Set up DRF router and register API endpoints for tasks and categories
 router = routers.DefaultRouter()
-# router.register(r'tasks', TaskViewSet)
-# In task_management_system/urls.py
-router.register(r'tasks', TaskViewSet, basename='task')  # Added basename parameter
-router.register(r'categories', CategoryViewSet, basename='category')
+router.register(r'tasks', TaskViewSet, basename='task')      # Task API routes
+router.register(r'categories', CategoryViewSet, basename='category')  # Category API routes
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('accounts/', include('allauth.urls')),
-    path('tasks/', include('tasks.urls')),
-    path('users/', include('users.urls')),
-    path('api/', include(router.urls)),
-    path('api-auth/', include('rest_framework.urls')),
-    path('', TemplateView.as_view(template_name='home.html'), name='home'),
+    path('accounts/', include('allauth.urls')),  # Django Allauth for authentication
+    path('tasks/', include('tasks.urls')),       # Tasks app URLs (HTML views)
+    path('users/', include('users.urls')),       # Users app URLs (profile, etc.)
+    path('api/', include(router.urls)),           # REST API routes
+    path('api-auth/', include('rest_framework.urls')),  # DRF login/logout for browsable API
+    path('', TemplateView.as_view(template_name='home.html'), name='home'),  # Homepage
 ]
+
 
 
 

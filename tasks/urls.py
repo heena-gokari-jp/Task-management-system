@@ -4,12 +4,12 @@ from . import views
 app_name = 'tasks'
 
 urlpatterns = [
-    path('', views.task_list, name='task_list'),
-    path('create/', views.task_create, name='task_create'),
-    path('<int:pk>/', views.task_detail, name='task_detail'),
-    path('<int:pk>/update/', views.task_update, name='task_update'),
-    path('<int:pk>/delete/', views.task_delete, name='task_delete'),
-    path('categories/', views.category_list, name='category_list'),
-    path('categories/create/', views.category_create, name='category_create'),
-    path('categories/<int:pk>/delete/', views.category_delete, name='category_delete'),
+    path('', views.task_list, name='task_list'),  # List all tasks with filtering, sorting, and search
+    path('create/', views.task_create, name='task_create'),  # Create a new task
+    path('<int:pk>/', views.task_detail, name='task_detail'),  # View details of a specific task
+    path('<int:pk>/update/', views.task_update, name='task_update'),  # Update an existing task
+    path('<int:pk>/delete/', views.task_delete, name='task_delete'),  # Delete a specific task
+    path('categories/', views.category_list, name='category_list'),  # List all categories
+    path('categories/create/', views.category_create, name='category_create'),  # Create a new category
+    path('categories/<int:pk>/delete/', views.category_delete, name='category_delete'),  # Delete a specific category
 ]

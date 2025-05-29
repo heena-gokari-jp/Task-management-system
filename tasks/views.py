@@ -5,49 +5,51 @@ from django.db.models import Q
 from .models import Task, Category
 from .forms import TaskForm, CategoryForm
 
+
 @login_required
 def task_list(request):
+    """
+    Display a list of tasks for the logged-in user with filtering, searching, and sorting.
+
+    Supports filtering by status, priority, and category, as well as searching
+    by title, description, or category name. Also allows sorting by due date or priority.
+
+    Template: tasks/task_list.html
+    """
     try:
         tasks = Task.objects.filter(user=request.user)
-        
-        # Filter by status
+
+        # Filters
         status_filter = request.GET.get('status')
         if status_filter:
             tasks = tasks.filter(status=status_filter)
-        
-        # Filter by priority
+
         priority_filter = request.GET.get('priority')
         if priority_filter:
             tasks = tasks.filter(priority=priority_filter)
-        
-        # Filter by category
+
         category_filter = request.GET.get('category')
         if category_filter:
             tasks = tasks.filter(categories__id=category_filter)
-        
-        # Search functionality
+
+        # Search
         search_query = request.GET.get('search')
         if search_query:
             tasks = tasks.filter(
-                Q(title__icontains=search_query) | 
+                Q(title__icontains=search_query) |
                 Q(description__icontains=search_query) |
                 Q(categories__name__icontains=search_query)
             ).distinct()
-        
-        # Sort functionality
+
+        # Sort
         sort_by = request.GET.get('sort_by')
         if sort_by == 'due_date':
             tasks = tasks.order_by('due_date')
         elif sort_by == 'priority':
-            # Custom ordering for priority
-            tasks = tasks.order_by(
-                # High priority first, then medium, then low
-                # Using Case/When would be better but this works for simple cases
-                '-priority'
-            )
-        
+            tasks = tasks.order_by('-priority')  # Simplified sorting logic
+
         categories = Category.objects.filter(user=request.user)
-        
+
         context = {
             'tasks': tasks,
             'categories': categories,
@@ -61,13 +63,30 @@ def task_list(request):
         messages.error(request, f"An error occurred: {str(e)}")
         return render(request, 'tasks/task_list.html', {'tasks': [], 'categories': []})
 
+
 @login_required
 def task_detail(request, pk):
+    """
+    Display the details of a single task owned by the user.
+
+    Args:
+        pk (int): Primary key of the task.
+
+    Template: tasks/task_detail.html
+    """
     task = get_object_or_404(Task, pk=pk, user=request.user)
     return render(request, 'tasks/task_detail.html', {'task': task})
 
+
 @login_required
 def task_create(request):
+    """
+    Handle creation of a new task.
+
+    On POST, validates and saves the task. On GET, displays the empty task form.
+
+    Template: tasks/task_form.html
+    """
     if request.method == 'POST':
         form = TaskForm(request.POST, user=request.user)
         if form.is_valid():
@@ -75,23 +94,33 @@ def task_create(request):
                 task = form.save(commit=False)
                 task.user = request.user
                 task.save()
-                form.save_m2m()  # Save many-to-many relationships
+                form.save_m2m()
                 messages.success(request, 'Task created successfully!')
                 return redirect('tasks:task_list')
             except Exception as e:
                 messages.error(request, f"An error occurred while creating the task: {str(e)}")
         else:
-            # Print form errors for debugging
             print(form.errors)
     else:
         form = TaskForm(user=request.user)
-    
+
     return render(request, 'tasks/task_form.html', {'form': form, 'title': 'Create Task'})
+
 
 @login_required
 def task_update(request, pk):
+    """
+    Handle editing of an existing task.
+
+    Args:
+        pk (int): Primary key of the task.
+
+    On POST, saves the updated task. On GET, shows pre-filled form.
+
+    Template: tasks/task_form.html
+    """
     task = get_object_or_404(Task, pk=pk, user=request.user)
-    
+
     if request.method == 'POST':
         form = TaskForm(request.POST, instance=task, user=request.user)
         if form.is_valid():
@@ -102,17 +131,25 @@ def task_update(request, pk):
             except Exception as e:
                 messages.error(request, f"An error occurred while updating the task: {str(e)}")
         else:
-            # Print form errors for debugging
             print(form.errors)
     else:
         form = TaskForm(instance=task, user=request.user)
-    
+
     return render(request, 'tasks/task_form.html', {'form': form, 'title': 'Update Task'})
+
 
 @login_required
 def task_delete(request, pk):
+    """
+    Handle deletion of a task.
+
+    Args:
+        pk (int): Primary key of the task.
+
+    Template: tasks/task_confirm_delete.html
+    """
     task = get_object_or_404(Task, pk=pk, user=request.user)
-    
+
     if request.method == 'POST':
         try:
             task.delete()
@@ -120,16 +157,30 @@ def task_delete(request, pk):
             return redirect('tasks:task_list')
         except Exception as e:
             messages.error(request, f"An error occurred while deleting the task: {str(e)}")
-    
+
     return render(request, 'tasks/task_confirm_delete.html', {'task': task})
+
 
 @login_required
 def category_list(request):
+    """
+    Display a list of categories owned by the user.
+
+    Template: tasks/category_list.html
+    """
     categories = Category.objects.filter(user=request.user)
     return render(request, 'tasks/category_list.html', {'categories': categories})
 
+
 @login_required
 def category_create(request):
+    """
+    Handle creation of a new category.
+
+    On POST, validates and saves the category. On GET, shows a blank form.
+
+    Template: tasks/category_form.html
+    """
     if request.method == 'POST':
         form = CategoryForm(request.POST)
         if form.is_valid():
@@ -143,13 +194,22 @@ def category_create(request):
                 messages.error(request, f"An error occurred while creating the category: {str(e)}")
     else:
         form = CategoryForm()
-    
+
     return render(request, 'tasks/category_form.html', {'form': form})
+
 
 @login_required
 def category_delete(request, pk):
+    """
+    Handle deletion of a category.
+
+    Args:
+        pk (int): Primary key of the category.
+
+    Template: tasks/category_confirm_delete.html
+    """
     category = get_object_or_404(Category, pk=pk, user=request.user)
-    
+
     if request.method == 'POST':
         try:
             category.delete()
@@ -157,5 +217,5 @@ def category_delete(request, pk):
             return redirect('tasks:category_list')
         except Exception as e:
             messages.error(request, f"An error occurred while deleting the category: {str(e)}")
-    
+
     return render(request, 'tasks/category_confirm_delete.html', {'category': category})

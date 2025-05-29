@@ -16,7 +16,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return Response(
                 {"error": f"Error retrieving tasks: {str(e)}"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR 
             )
     
     def perform_create(self, serializer):

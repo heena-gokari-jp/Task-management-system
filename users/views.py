@@ -7,10 +7,17 @@ from .models import UserProfile
 
 @login_required
 def profile_view(request):
+    """
+    Display the profile page for the logged-in user.
+    Retrieves or creates a UserProfile instance linked to the user.
+    """
     user = request.user
-    # Get or create user profile
-    profile, created = UserProfile.objects.get_or_create(user=user)
-    
+    try:
+        profile, _ = UserProfile.objects.get_or_create(user=user)
+    except Exception as e:
+        messages.error(request, f"Error loading profile: {str(e)}")
+        profile = None
+
     context = {
         'user': user,
         'profile': profile
@@ -19,18 +26,24 @@ def profile_view(request):
 
 @login_required
 def profile_update(request):
+    """
+    Allow the logged-in user to update their profile information.
+    Displays and processes the UserUpdateForm.
+    """
     user = request.user
-    
+
     if request.method == 'POST':
         user_form = UserUpdateForm(request.POST, instance=user)
-        
         if user_form.is_valid():
-            user_form.save()
-            messages.success(request, 'Your profile has been updated successfully!')
-            return redirect('users:profile')
+            try:
+                user_form.save()
+                messages.success(request, 'Your profile has been updated successfully!')
+                return redirect('users:profile')
+            except Exception as e:
+                messages.error(request, f"Error updating profile: {str(e)}")
     else:
         user_form = UserUpdateForm(instance=user)
-    
+
     context = {
         'user_form': user_form,
     }
