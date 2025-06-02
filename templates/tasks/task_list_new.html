@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Task List</h2>
+
+<div class="task-header">
+  <div class="col" data-field="title">Title</div>
+  <div class="col" data-field="priority">Priority</div>
+  <div class="col" data-field="due_date">Due Date</div>
+  <div class="col" data-field="status">Status</div>
+  <div class="col" data-field="category">Category</div>
+</div>
+
+<div id="taskList"></div>
+
+<div class="pagination">
+  <button id="prevPage">Prev</button>
+  <span id="pageInfo">Page 1</span>
+  <button id="nextPage">Next</button>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const tasks = JSON.parse('{{ tasks_json | escapejs }}');
+  let currentPage = 1;
+  const pageSize = 5;
+  let sortField = 'title';
+  let sortAsc = true;
+
+  function renderTasks() {
+    const sorted = [...tasks].sort((a, b) => {
+      let valA = a[sortField] || '';
+      let valB = b[sortField] || '';
+
+      if (sortField === 'due_date') {
+        valA = valA ? new Date(valA) : new Date(0);
+        valB = valB ? new Date(valB) : new Date(0);
+      }
+
+      const result = (valA > valB) ? 1 : (valA < valB) ? -1 : 0;
+      return sortAsc ? result : -result;
+    });
+
+    const totalPages = Math.ceil(tasks.length / pageSize);
+    const start = (currentPage - 1) * pageSize;
+    const pageTasks = sorted.slice(start, start + pageSize);
+
+    $('#taskList').empty();
+    pageTasks.forEach(task => {
+      $('#taskList').append(`
+        <div class="task-row row">
+          <div class="col">${task.title}</div>
+          <div class="col">${task.priority}</div>
+          <div class="col">${task.due_date || ''}</div>
+          <div class="col">${task.status}</div>
+          <div class="col">${task.category_names || ''}</div>
+        </div>
+      `);
+    });
+
+    // Update pagination info
+    $('#pageInfo').text(`Page ${currentPage} of ${totalPages}`);
+
+    // Enable/disable buttons
+    $('#prevPage').prop('disabled', currentPage <= 1);
+    $('#nextPage').prop('disabled', currentPage >= totalPages);
+  }
+
+  $('.pagination #prevPage').click(() => {
+    if (currentPage > 1) {
+      currentPage--;
+      renderTasks();
+    }
+  });
+
+  $('.pagination #nextPage').click(() => {
+    const totalPages = Math.ceil(tasks.length / pageSize);
+    if (currentPage < totalPages) {
+      currentPage++;
+      renderTasks();
+    }
+  });
+
+  $(document).on('click', '.task-header .col', function () {
+    const field = $(this).data('field');
+    if (sortField === field) {
+      sortAsc = !sortAsc;
+    } else {
+      sortField = field;
+      sortAsc = true;
+    }
+    currentPage = 1;
+    renderTasks();
+  });
+
+  $(document).ready(renderTasks);
+</script>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  .task-header, .task-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    padding: 8px;
+    font-weight: bold;
+    background: #e0e0e0;
+    border-bottom: 1px solid #ccc;
+    cursor: pointer;
+  }
+
+  .task-row {
+    font-weight: normal;
+    background: #f9f9f9;
+  }
+
+  .task-row:nth-child(even) {
+    background: #f0f0f0;
+  }
+
+  .col {
+    padding: 4px 6px;
+  }
+
+  .pagination {
+    margin-top: 10px;
+    text-align: center;
+  }
+
+  .pagination button {
+    padding: 5px 10px;
+    margin: 0 5px;
+  }
+</style>
+{% endblock %}
