@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Page Not Found{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="error-page">
+                <div class="error-code">
+                    <h1 class="display-1 fw-bold text-primary">404</h1>
+                </div>
+                <div class="error-message">
+                    <h2 class="mb-3">Oops! Page Not Found</h2>
+                    <p class="lead text-muted mb-4">
+                        The page you're looking for doesn't exist or has been moved.
+                    </p>
+                    <div class="error-actions">
+                        <a href="{% url 'home' %}" class="btn btn-primary me-3">
+                            <i class="bi bi-house"></i> Go Home
+                        </a>
+                        <a href="{% url 'tasks:task_list' %}" class="btn btn-outline-primary">
+                            <i class="bi bi-list-task"></i> View Tasks
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

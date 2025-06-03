@@ -1,0 +1,312 @@
+{% extends 'base.html' %}
+
+{% block title %}Tasks - Task Management{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h2 class="mb-0">
+                        <i class="bi bi-list-task"></i> My Tasks
+                        {% if search_query or current_status or current_priority or current_category %}
+                            <small class="opacity-75">(Filtered)</small>
+                        {% endif %}
+                    </h2>
+                    <div class="header-actions">
+                        <a href="{% url 'tasks:task_create' %}" class="btn btn-light me-2">
+                            <i class="bi bi-plus-circle"></i> New Task
+                        </a>
+                        <button class="btn btn-outline-light" type="button" data-bs-toggle="collapse" 
+                                data-bs-target="#filterCollapse" aria-expanded="false">
+                            <i class="bi bi-funnel"></i> Filters
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Advanced Filters -->
+                <div class="collapse" id="filterCollapse">
+                    <div class="card-body bg-light border-bottom">
+                        <form method="get" class="filter-form">
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <label class="form-label fw-bold">Search</label>
+                                    <div class="input-group">
+                                        <input type="text" name="search" class="form-control" 
+                                               placeholder="Search tasks..." value="{{ search_query|default:'' }}">
+                                        <button class="btn btn-outline-secondary" type="submit">
+                                            <i class="bi bi-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label fw-bold">Status</label>
+                                    <select name="status" class="form-select">
+                                        <option value="">All Statuses</option>
+                                        <option value="pending" {% if current_status == 'pending' %}selected{% endif %}>Pending</option>
+                                        <option value="in_progress" {% if current_status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                                        <option value="completed" {% if current_status == 'completed' %}selected{% endif %}>Completed</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label fw-bold">Priority</label>
+                                    <select name="priority" class="form-select">
+                                        <option value="">All Priorities</option>
+                                        <option value="high" {% if current_priority == 'high' %}selected{% endif %}>High</option>
+                                        <option value="medium" {% if current_priority == 'medium' %}selected{% endif %}>Medium</option>
+                                        <option value="low" {% if current_priority == 'low' %}selected{% endif %}>Low</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label fw-bold">Category</label>
+                                    <select name="category" class="form-select">
+                                        <option value="">All Categories</option>
+                                        {% for category in categories %}
+                                            <option value="{{ category.id }}" {% if current_category == category.id|stringformat:"i" %}selected{% endif %}>{{ category.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label fw-bold">Sort By</label>
+                                    <select name="sort_by" class="form-select">
+                                        <option value="">Latest First</option>
+                                        <option value="due_date">Due Date</option>
+                                        <option value="priority">Priority</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-1">
+                                    <label class="form-label">&nbsp;</label>
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-primary">Apply</button>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if request.GET %}
+                                <div class="mt-3">
+                                    <a href="{% url 'tasks:task_list' %}" class="btn btn-outline-secondary btn-sm">
+                                        <i class="bi bi-x-circle"></i> Clear All Filters
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <!-- Tasks List -->
+                    {% if tasks %}
+                        <div class="task-grid">
+                            {% for task in tasks %}
+                                <div class="task-card mb-3 
+                                    {% if task.priority == 'high' %}border-danger{% elif task.priority == 'medium' %}border-warning{% else %}border-primary{% endif %}
+                                    {% if task.status == 'completed' %}task-completed{% endif %}">
+                                    
+                                    <div class="task-header d-flex justify-content-between align-items-start">
+                                        <div class="task-title flex-grow-1">
+                                            <a href="{% url 'tasks:task_detail' task.id %}" class="text-decoration-none">
+                                                <h5 class="mb-1 task-title-text">{{ task.title }}</h5>
+                                            </a>
+                                        </div>
+                                        <div class="task-actions">
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" 
+                                                        type="button" data-bs-toggle="dropdown">
+                                                    <i class="bi bi-three-dots"></i>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end">
+                                                    <li><a class="dropdown-item" href="{% url 'tasks:task_detail' task.id %}">
+                                                        <i class="bi bi-eye"></i> View Details</a></li>
+                                                    <li><a class="dropdown-item" href="{% url 'tasks:task_update' task.id %}">
+                                                        <i class="bi bi-pencil"></i> Edit Task</a></li>
+                                                    <li><hr class="dropdown-divider"></li>
+                                                    <li><a class="dropdown-item text-danger" href="{% url 'tasks:task_delete' task.id %}">
+                                                        <i class="bi bi-trash"></i> Delete Task</a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    {% if task.description %}
+                                        <p class="task-description text-muted mb-2">{{ task.description|truncatechars:150 }}</p>
+                                    {% endif %}
+                                    
+                                    <div class="task-meta d-flex justify-content-between align-items-center flex-wrap">
+                                        <div class="task-badges mb-2">
+                                            <span class="badge bg-{% if task.status == 'pending' %}secondary{% elif task.status == 'in_progress' %}warning{% else %}success{% endif %} me-1">
+                                                {{ task.get_status_display }}
+                                            </span>
+                                            <span class="badge bg-{% if task.priority == 'high' %}danger{% elif task.priority == 'medium' %}warning{% else %}primary{% endif %} me-1">
+                                                {{ task.get_priority_display }} Priority
+                                            </span>
+                                            {% for category in task.categories.all %}
+                                                <span class="badge bg-dark me-1">{{ category.name }}</span>
+                                            {% endfor %}
+                                        </div>
+                                        
+                                        {% if task.due_date %}
+                                            <div class="task-due-date">
+                                                <small class="{% if task.due_date < now and task.status != 'completed' %}text-danger fw-bold{% else %}text-muted{% endif %}">
+                                                    <i class="bi bi-calendar"></i> 
+                                                    {% if task.due_date < now and task.status != 'completed' %}
+                                                        Overdue: {{ task.due_date|date:"M d, Y" }}
+                                                    {% else %}
+                                                        Due: {{ task.due_date|date:"M d, Y" }}
+                                                    {% endif %}
+                                                </small>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="task-timestamps mt-2">
+                                        <small class="text-muted">
+                                            Created: {{ task.created_at|date:"M d, Y" }}
+                                            {% if task.updated_at != task.created_at %}
+                                                | Updated: {{ task.updated_at|date:"M d, Y" }}
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Pagination -->
+                        {% if page_obj.has_other_pages %}
+                            <nav aria-label="Task pagination" class="mt-4">
+                                <ul class="pagination justify-content-center">
+                                    {% if page_obj.has_previous %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page=1">
+                                                <i class="bi bi-chevron-double-left"></i> First
+                                            </a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}">
+                                                <i class="bi bi-chevron-left"></i> Previous
+                                            </a>
+                                        </li>
+                                    {% endif %}
+
+                                    {% for num in page_obj.paginator.page_range %}
+                                        {% if page_obj.number == num %}
+                                            <li class="page-item active">
+                                                <span class="page-link">{{ num }}</span>
+                                            </li>
+                                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ num }}">{{ num }}</a>
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+
+                                    {% if page_obj.has_next %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}">
+                                                Next <i class="bi bi-chevron-right"></i>
+                                            </a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.paginator.num_pages }}">
+                                                Last <i class="bi bi-chevron-double-right"></i>
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                                
+                                <div class="text-center text-muted mt-2">
+                                    <small>
+                                        Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} 
+                                        of {{ page_obj.paginator.count }} tasks
+                                    </small>
+                                </div>
+                            </nav>
+                        {% endif %}
+
+                    {% else %}
+                        <div class="text-center py-5">
+                            <div class="empty-state">
+                                <i class="bi bi-inbox" style="font-size: 5rem; color: #dee2e6;"></i>
+                                <h3 class="mt-3 text-muted">No tasks found</h3>
+                                <p class="text-muted">
+                                    {% if request.GET %}
+                                        Try adjusting your filters or <a href="{% url 'tasks:task_list' %}" class="text-decoration-none">view all tasks</a>.
+                                    {% else %}
+                                        <a href="{% url 'tasks:task_create' %}" class="text-decoration-none">Create your first task</a> to get started.
+                                    {% endif %}
+                                </p>
+                                {% if not request.GET %}
+                                    <a href="{% url 'tasks:task_create' %}" class="btn btn-primary">
+                                        <i class="bi bi-plus-circle"></i> Create Your First Task
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.task-card {
+    border: 1px solid #e9ecef;
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    background: white;
+    border-left-width: 4px;
+    transition: all 0.3s ease;
+}
+
+.task-card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    transform: translateY(-3px);
+}
+
+.task-completed {
+    opacity: 0.7;
+    background-color: #f8f9fa;
+}
+
+.task-title-text {
+    color: #212529;
+    transition: color 0.3s ease;
+}
+
+.task-title-text:hover {
+    color: #0d6efd;
+}
+
+.task-description {
+    line-height: 1.5;
+}
+
+.task-badges .badge {
+    font-size: 0.75rem;
+    padding: 0.375rem 0.75rem;
+}
+
+.task-timestamps {
+    border-top: 1px solid #e9ecef;
+    padding-top: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .task-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .task-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .filter-form .row {
+        row-gap: 1rem;
+    }
+}
+</style>
+{% endblock %}

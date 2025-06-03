@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Task Management{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Welcome Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <div class="card-body py-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h1 class="mb-2">Welcome back, {{ user.first_name|default:user.username }}! 👋</h1>
+                            <p class="mb-0 opacity-75">Here's what's happening with your tasks today.</p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="completion-circle mx-auto" style="background: rgba(255,255,255,0.2); border-radius: 50%; width: 80px; height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                                <span id="completionRate" class="h3 mb-0">0%</span>
+                                <small>Complete</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-2 col-sm-6 mb-3">
+            <div class="card text-center h-100 border-primary">
+                <div class="card-body">
+                    <i class="bi bi-list-task text-primary" style="font-size: 2.5rem;"></i>
+                    <h3 class="mt-2 mb-1 text-primary" id="totalTasks">0</h3>
+                    <p class="text-muted small mb-0">Total Tasks</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 col-sm-6 mb-3">
+            <div class="card text-center h-100 border-warning">
+                <div class="card-body">
+                    <i class="bi bi-clock text-warning" style="font-size: 2.5rem;"></i>
+                    <h3 class="mt-2 mb-1 text-warning" id="pendingTasks">0</h3>
+                    <p class="text-muted small mb-0">Pending</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 col-sm-6 mb-3">
+            <div class="card text-center h-100 border-info">
+                <div class="card-body">
+                    <i class="bi bi-arrow-clockwise text-info" style="font-size: 2.5rem;"></i>
+                    <h3 class="mt-2 mb-1 text-info" id="progressTasks">0</h3>
+                    <p class="text-muted small mb-0">In Progress</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 col-sm-6 mb-3">
+            <div class="card text-center h-100 border-success">
+                <div class="card-body">
+                    <i class="bi bi-check-circle text-success" style="font-size: 2.5rem;"></i>
+                    <h3 class="mt-2 mb-1 text-success" id="completedTasks">0</h3>
+                    <p class="text-muted small mb-0">Completed</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 col-sm-6 mb-3">
+            <div class="card text-center h-100 border-danger">
+                <div class="card-body">
+                    <i class="bi bi-exclamation-triangle text-danger" style="font-size: 2.5rem;"></i>
+                    <h3 class="mt-2 mb-1 text-danger" id="overdueTasks">0</h3>
+                    <p class="text-muted small mb-0">Overdue</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 col-sm-6 mb-3">
+            <div class="card text-center h-100 border-secondary">
+                <div class="card-body">
+                    <i class="bi bi-star text-secondary" style="font-size: 2.5rem;"></i>
+                    <h3 class="mt-2 mb-1 text-secondary" id="highPriorityTasks">0</h3>
+                    <p class="text-muted small mb-0">High Priority</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-md-3 col-sm-6 mb-3">
+            <a href="{% url 'tasks:task_create' %}" class="card text-decoration-none text-dark h-100 quick-action">
+                <div class="card-body text-center py-4">
+                    <i class="bi bi-plus-circle text-primary" style="font-size: 3rem;"></i>
+                    <h5 class="mt-3">Create Task</h5>
+                    <p class="text-muted small">Add a new task to your list</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <a href="{% url 'tasks:notifications' %}" class="card text-decoration-none text-dark h-100 quick-action">
+                <div class="card-body text-center py-4">
+                    <i class="bi bi-bell text-warning" style="font-size: 3rem;"></i>
+                    <h5 class="mt-3">Notifications</h5>
+                    <p class="text-muted small">Check overdue and upcoming tasks</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <a href="{% url 'tasks:category_create' %}" class="card text-decoration-none text-dark h-100 quick-action">
+                <div class="card-body text-center py-4">
+                    <i class="bi bi-tags text-info" style="font-size: 3rem;"></i>
+                    <h5 class="mt-3">New Category</h5>
+                    <p class="text-muted small">Organize tasks with categories</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <a href="{% url 'tasks:task_list' %}" class="card text-decoration-none text-dark h-100 quick-action">
+                <div class="card-body text-center py-4">
+                    <i class="bi bi-list-ul text-success" style="font-size: 3rem;"></i>
+                    <h5 class="mt-3">View All Tasks</h5>
+                    <p class="text-muted small">See detailed task list</p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Kanban Board -->
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="bi bi-clock"></i> Pending Tasks</h5>
+                </div>
+                <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                    <div id="pendingTasksColumn" class="task-column">
+                        <div class="empty-state text-center text-muted py-4">
+                            <i class="bi bi-inbox" style="font-size: 3rem; opacity: 0.5;"></i>
+                            <p class="mt-2">No pending tasks</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-arrow-clockwise"></i> In Progress</h5>
+                </div>
+                <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                    <div id="progressTasksColumn" class="task-column">
+                        <div class="empty-state text-center text-muted py-4">
+                            <i class="bi bi-inbox" style="font-size: 3rem; opacity: 0.5;"></i>
+                            <p class="mt-2">No tasks in progress</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-check-circle"></i> Completed</h5>
+                </div>
+                <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                    <div id="completedTasksColumn" class="task-column">
+                        <div class="empty-state text-center text-muted py-4">
+                            <i class="bi bi-inbox" style="font-size: 3rem; opacity: 0.5;"></i>
+                            <p class="mt-2">No completed tasks</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.quick-action:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.task-item {
+    background: #f8f9fa;
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    border-left: 3px solid #007bff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.task-item:hover {
+    background: #e9ecef;
+    transform: translateX(5px);
+}
+
+.task-item.priority-high { border-left-color: #dc3545; }
+.task-item.priority-medium { border-left-color: #ffc107; }
+.task-item.priority-low { border-left-color: #007bff; }
+
+@media (max-width: 768px) {
+    .completion-circle {
+        margin-top: 1rem;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadDashboardData();
+    setInterval(loadDashboardData, 300000); // Refresh every 5 minutes
+});
+
+function loadDashboardData() {
+    // Load statistics
+    fetch('{% url "tasks:dashboard_stats" %}')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('totalTasks').textContent = data.total_tasks;
+            document.getElementById('pendingTasks').textContent = data.pending_tasks;
+            document.getElementById('progressTasks').textContent = data.in_progress_tasks;
+            document.getElementById('completedTasks').textContent = data.completed_tasks;
+            document.getElementById('overdueTasks').textContent = data.overdue_tasks;
+            document.getElementById('highPriorityTasks').textContent = data.high_priority_tasks;
+            document.getElementById('completionRate').textContent = data.completion_rate + '%';
+        })
+        .catch(error => console.error('Error loading stats:', error));
+}
+</script>
+{% endblock %}

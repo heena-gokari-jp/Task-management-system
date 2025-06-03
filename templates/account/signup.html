@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}Create Account - Task Management{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-lg border-0">
+                <div class="card-header text-white text-center py-4" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); border-radius: 0.75rem 0.75rem 0 0;">
+                    <h3 class="mb-0">
+                        <i class="bi bi-person-plus-fill"></i>
+                        Create Account
+                    </h3>
+                    <p class="mb-0 opacity-75">Join Task Management today</p>
+                </div>
+                <div class="card-body p-5">
+                    <form method="post" action="{% url 'account_signup' %}">
+                        {% csrf_token %}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="id_first_name" class="form-label">First Name</label>
+                                <input type="text" name="first_name" class="form-control" id="id_first_name" 
+                                       placeholder="John">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_last_name" class="form-label">Last Name</label>
+                                <input type="text" name="last_name" class="form-control" id="id_last_name" 
+                                       placeholder="Doe">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_email" class="form-label">Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-envelope"></i>
+                                </span>
+                                <input type="email" name="email" class="form-control" id="id_email" 
+                                       placeholder="john.doe@example.com" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_password1" class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-lock"></i>
+                                </span>
+                                <input type="password" name="password1" class="form-control" id="id_password1" 
+                                       placeholder="Create a strong password" required>
+                            </div>
+                            <div class="form-text">
+                                <small>Password must be at least 8 characters long.</small>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_password2" class="form-label">Confirm Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-lock-fill"></i>
+                                </span>
+                                <input type="password" name="password2" class="form-control" id="id_password2" 
+                                       placeholder="Confirm your password" required>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="bi bi-person-check"></i> Create Account
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-center py-3 bg-light">
+                    <span class="text-muted">Already have an account?</span>
+                    <a href="{% url 'account_login' %}" class="text-decoration-none fw-bold">Sign in</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const password1 = document.getElementById('id_password1');
+    const password2 = document.getElementById('id_password2');
+    
+    function validatePassword() {
+        if (password1.value !== password2.value) {
+            password2.setCustomValidity("Passwords don't match");
+        } else {
+            password2.setCustomValidity('');
+        }
+    }
+    
+    password1.addEventListener('change', validatePassword);
+    password2.addEventListener('keyup', validatePassword);
+});
+</script>
+{% endblock %}

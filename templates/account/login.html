@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}Sign In - Task Management{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-lg border-0">
+                <div class="card-header text-white text-center py-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 0.75rem 0.75rem 0 0;">
+                    <h3 class="mb-0">
+                        <i class="bi bi-person-check-fill"></i>
+                        Welcome Back
+                    </h3>
+                    <p class="mb-0 opacity-75">Sign in to your account</p>
+                </div>
+                <div class="card-body p-5">
+                    <!-- Login Form -->
+                    <form method="post" action="{% url 'account_login' %}">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="id_login" class="form-label">Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-envelope"></i>
+                                </span>
+                                <input type="email" name="login" class="form-control" id="id_login" 
+                                       placeholder="Enter your email" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_password" class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-lock"></i>
+                                </span>
+                                <input type="password" name="password" class="form-control" id="id_password" 
+                                       placeholder="Enter your password" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" name="remember" class="form-check-input" id="id_remember">
+                            <label class="form-check-label" for="id_remember">
+                                Remember me
+                            </label>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-box-arrow-in-right"></i> Sign In
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div class="text-center mt-4">
+                        <a href="{% url 'account_reset_password' %}" class="text-decoration-none">
+                            Forgot your password?
+                        </a>
+                    </div>
+                </div>
+                <div class="card-footer text-center py-3 bg-light">
+                    <span class="text-muted">Don't have an account?</span>
+                    <a href="{% url 'account_signup' %}" class="text-decoration-none fw-bold">Sign up</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

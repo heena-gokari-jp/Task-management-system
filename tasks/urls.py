@@ -12,4 +12,8 @@ urlpatterns = [
     path('categories/', views.category_list, name='category_list'),  # List all categories
     path('categories/create/', views.category_create, name='category_create'),  # Create a new category
     path('categories/<int:pk>/delete/', views.category_delete, name='category_delete'),  # Delete a specific category
+    path('dashboard/', views.dashboard, name='dashboard'),
+    path('notifications/', views.task_notifications, name='notifications'),
+    path('api/notifications-count/', views.notifications_count, name='notifications_count'),
+    path('api/dashboard-stats/', views.task_dashboard_stats, name='dashboard_stats'),
 ]
