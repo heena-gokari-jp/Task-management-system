@@ -1,5 +1,7 @@
 from django.contrib import admin
-from .models import Task, Category
+
+from .models import Category, Task
+
 
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
@@ -9,9 +11,10 @@ class TaskAdmin(admin.ModelAdmin):
     - Adds filtering by status, priority, and categories.
     - Enables search by title and description.
     """
-    list_display = ('title', 'priority', 'status', 'due_date', 'user')
-    list_filter = ('status', 'priority', 'categories')
-    search_fields = ('title', 'description')
+
+    list_display = ("title", "priority", "status", "due_date", "user")
+    list_filter = ("status", "priority", "categories")
+    search_fields = ("title", "description")
 
 
 @admin.register(Category)
@@ -21,5 +24,6 @@ class CategoryAdmin(admin.ModelAdmin):
     - Displays category name and associated user.
     - Enables search by name.
     """
-    list_display = ('name', 'user')
-    search_fields = ('name',)
+
+    list_display = ("name", "user")
+    search_fields = ("name",)

@@ -18,14 +18,14 @@
                         <a href="{% url 'tasks:task_create' %}" class="btn btn-light me-2">
                             <i class="bi bi-plus-circle"></i> New Task
                         </a>
-                        <button class="btn btn-outline-light" type="button" data-bs-toggle="collapse" 
+                        <button class="btn btn-outline-light" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#filterCollapse" aria-expanded="false">
                             <i class="bi bi-funnel"></i> Filters
                         </button>
                     </div>
                 </div>
-                
-                <!-- Advanced Filters -->
+
+
                 <div class="collapse" id="filterCollapse">
                     <div class="card-body bg-light border-bottom">
                         <form method="get" class="filter-form">
@@ -33,7 +33,7 @@
                                 <div class="col-md-3">
                                     <label class="form-label fw-bold">Search</label>
                                     <div class="input-group">
-                                        <input type="text" name="search" class="form-control" 
+                                        <input type="text" name="search" class="form-control"
                                                placeholder="Search tasks..." value="{{ search_query|default:'' }}">
                                         <button class="btn btn-outline-secondary" type="submit">
                                             <i class="bi bi-search"></i>
@@ -94,14 +94,14 @@
                 </div>
 
                 <div class="card-body">
-                    <!-- Tasks List -->
+
                     {% if tasks %}
                         <div class="task-grid">
                             {% for task in tasks %}
-                                <div class="task-card mb-3 
+                                <div class="task-card mb-3
                                     {% if task.priority == 'high' %}border-danger{% elif task.priority == 'medium' %}border-warning{% else %}border-primary{% endif %}
                                     {% if task.status == 'completed' %}task-completed{% endif %}">
-                                    
+
                                     <div class="task-header d-flex justify-content-between align-items-start">
                                         <div class="task-title flex-grow-1">
                                             <a href="{% url 'tasks:task_detail' task.id %}" class="text-decoration-none">
@@ -110,7 +110,7 @@
                                         </div>
                                         <div class="task-actions">
                                             <div class="dropdown">
-                                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" 
+                                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
                                                         type="button" data-bs-toggle="dropdown">
                                                     <i class="bi bi-three-dots"></i>
                                                 </button>
@@ -126,11 +126,11 @@
                                             </div>
                                         </div>
                                     </div>
-                                    
+
                                     {% if task.description %}
                                         <p class="task-description text-muted mb-2">{{ task.description|truncatechars:150 }}</p>
                                     {% endif %}
-                                    
+
                                     <div class="task-meta d-flex justify-content-between align-items-center flex-wrap">
                                         <div class="task-badges mb-2">
                                             <span class="badge bg-{% if task.status == 'pending' %}secondary{% elif task.status == 'in_progress' %}warning{% else %}success{% endif %} me-1">
@@ -143,11 +143,11 @@
                                                 <span class="badge bg-dark me-1">{{ category.name }}</span>
                                             {% endfor %}
                                         </div>
-                                        
+
                                         {% if task.due_date %}
                                             <div class="task-due-date">
                                                 <small class="{% if task.due_date < now and task.status != 'completed' %}text-danger fw-bold{% else %}text-muted{% endif %}">
-                                                    <i class="bi bi-calendar"></i> 
+                                                    <i class="bi bi-calendar"></i>
                                                     {% if task.due_date < now and task.status != 'completed' %}
                                                         Overdue: {{ task.due_date|date:"M d, Y" }}
                                                     {% else %}
@@ -157,7 +157,7 @@
                                             </div>
                                         {% endif %}
                                     </div>
-                                    
+
                                     <div class="task-timestamps mt-2">
                                         <small class="text-muted">
                                             Created: {{ task.created_at|date:"M d, Y" }}
@@ -170,7 +170,7 @@
                             {% endfor %}
                         </div>
 
-                        <!-- Pagination -->
+
                         {% if page_obj.has_other_pages %}
                             <nav aria-label="Task pagination" class="mt-4">
                                 <ul class="pagination justify-content-center">
@@ -212,10 +212,10 @@
                                         </li>
                                     {% endif %}
                                 </ul>
-                                
+
                                 <div class="text-center text-muted mt-2">
                                     <small>
-                                        Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} 
+                                        Showing {{ page_obj.start_index }} to {{ page_obj.end_index }}
                                         of {{ page_obj.paginator.count }} tasks
                                     </small>
                                 </div>
@@ -297,13 +297,13 @@
         align-items: flex-start;
         gap: 0.5rem;
     }
-    
+
     .task-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.5rem;
     }
-    
+
     .filter-form .row {
         row-gap: 1rem;
     }
